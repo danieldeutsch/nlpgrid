@@ -16,9 +16,9 @@ def main(args):
 
         script = [
             f'#!/bin/sh',
-            f'#$ -N ${name}',
-            f'#$ -o ${stdout}',
-            f'#$ -e ${stderr}',
+            f'#$ -N {name}',
+            f'#$ -o {stdout}',
+            f'#$ -e {stderr}',
             f'#$ -pe parallel-onenode {num_slots}',
             f'#$ -cwd',
             f'date',
