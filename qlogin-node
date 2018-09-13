@@ -1,0 +1,7 @@
+#!/usr/local/bin/bash
+if [ $# -ne 1 ]; then
+  echo "Usage: qlogin-node <node-name>"
+  exit
+fi
+
+qlogin -l h=$1 -now n

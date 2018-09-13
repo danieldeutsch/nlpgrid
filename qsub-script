@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+import argparse
+import os
+import subprocess
+import tempfile
+
+
+def main(args):
+    pid = os.getpid()
+    with tempfile.NamedTemporaryFile() as temp:
+        name = args.N or str(pid)
+        stdout = args.o or f'{pid}.out'
+        stderr = args.e or f'{pid}.err'
+        num_slots = args.pe
+        command = args.command
+
+        script = [
+            f'#!/bin/sh',
+            f'#$ -N ${name}',
+            f'#$ -o ${stdout}',
+            f'#$ -e ${stderr}',
+            f'#$ -pe parallel-onenode {num_slots}',
+            f'#$ -cwd',
+            f'date',
+            f'echo "{command}"',
+            command,
+            f'date',
+        ]
+        script = '\n'.join(script)
+        print(script)
+
+        with open(temp.name, 'w') as out:
+            out.write(script)
+
+        subprocess.call(['qsub', temp.name])
+
+
+if __name__ == '__main__':
+    argp = argparse.ArgumentParser()
+    argp.add_argument('-N', type=str)
+    argp.add_argument('-o', type=str)
+    argp.add_argument('-e', type=str)
+    argp.add_argument('-pe', type=int, default=1)
+    argp.add_argument('-hold_jid', type=str)
+    argp.add_argument('command', type=str)
+    args = argp.parse_args()
+    main(args)
