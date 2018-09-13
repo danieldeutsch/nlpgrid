@@ -14,19 +14,25 @@ def main(args):
         num_slots = args.pe
         command = args.command
 
-        script = [
+        header = [
             f'#!/bin/sh',
             f'#$ -N {name}',
             f'#$ -o {stdout}',
             f'#$ -e {stderr}',
             f'#$ -pe parallel-onenode {num_slots}',
-            f'#$ -cwd',
+            f'#$ -cwd'
+        ]
+        if args.hold_jid:
+            header.append(f'#$ -hold_jid {args.hold_jid}')
+
+        body = [
             f'date',
             f'echo "{command}"',
             command,
             f'date',
         ]
-        script = '\n'.join(script)
+
+        script = '\n'.join(header) + '\n' + '\n'.join(body)
         print(script)
 
         with open(temp.name, 'w') as out:
